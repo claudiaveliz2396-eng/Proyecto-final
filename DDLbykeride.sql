@@ -1,6 +1,5 @@
 -- =====================================================
 -- tablas de usuarios - bykeride
--- postgresql
 -- =====================================================
 
 
@@ -82,5 +81,89 @@ create table configuracion_seguridad (
 
     foreign key (usuario_id)
         references usuario(usuario_id)
+        on delete cascade
+);
+
+-- =====================================================
+-- tablas geográficas - bykeride
+-- =====================================================
+
+
+-- 6. municipios
+create table municipio(
+    municipio_id serial primary key,
+    nombre varchar(100) not null unique,
+    clave_inegi varchar(10) not null unique
+);
+
+
+-- 7. colonias
+create table colonia (
+    colonia_id serial primary key,
+    municipio_id int not null,
+    nombre varchar(120) not null,
+    codigo_postal varchar(10),
+
+    unique (municipio_id, nombre),
+
+    foreign key (municipio_id)
+        references municipio(municipio_id)
+        on delete restrict
+);
+
+
+-- 8. ciclovías
+create table ciclovia (
+    ciclovia_id serial primary key,
+    nombre varchar(150) not null,
+    descripcion text,
+    fecha_alta date not null default current_date,
+    activa boolean not null default true
+);
+
+
+-- 9. tramos de las ciclovías
+create table tramo_ciclovia (
+    tramo_id serial primary key,
+    ciclovia_id int not null,
+    nombre varchar(150) not null,
+
+    latitud_inicio decimal(9,6) not null,
+    longitud_inicio decimal(9,6) not null,
+    latitud_fin decimal(9,6) not null,
+    longitud_fin decimal(9,6) not null,
+
+    longitud_m decimal(10,2) not null,
+    sentido varchar(20),
+    activo boolean not null default true,
+
+    foreign key (ciclovia_id)
+        references ciclovia(ciclovia_id)
+        on delete cascade,
+
+    check (latitud_inicio between -90 and 90),
+    check (latitud_fin between -90 and 90),
+
+    check (longitud_inicio between -180 and 180),
+    check (longitud_fin between -180 and 180),
+
+    check (longitud_m > 0)
+);
+
+
+-- 10. relación entre tramos y colonias
+create table tramo_colonia (
+    tramo_id int not null,
+    colonia_id int not null,
+    es_principal boolean not null default false,
+
+    primary key (tramo_id, colonia_id),
+
+    foreign key (tramo_id)
+        references tramo_ciclovia(tramo_id)
+        on delete cascade,
+
+    foreign key (colonia_id)
+        references colonia(colonia_id)
         on delete cascade
 );
