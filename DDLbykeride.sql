@@ -155,7 +155,6 @@ create table tramo_ciclovia (
 create table tramo_colonia (
     tramo_id int not null,
     colonia_id int not null,
-    es_principal boolean not null default false,
 
     primary key (tramo_id, colonia_id),
 
