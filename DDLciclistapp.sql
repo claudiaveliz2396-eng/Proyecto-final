@@ -171,31 +171,22 @@ create table tramo_colonia (
 -- =====================================================
 -- tablas administrativas - ciclistapp
 -- =====================================================
+-- los usuarios de estas tablas deben tener un rol administrativo
+-- asignado mediante la tabla usuario_rol
 
---11. Administradores
-create table administrador (
-    admin_id primary key,
-    usuario_id int not null unique,
-    nivel varchar(50) not null, -- Ej: superadmin, moderador
-    creado_en timestamp default current_timestamp,
-
-    foreign key (usuario_id)
-        references usuario(usuario_id)
-        on delete cascade
-);
---12. acciones del administrador 
+-- 11. acciones del administrador 
 create table acciones_administrador(
     accion_id serial primary key,
-    admin_id int not null,
-    entidad_afectada varchar(100) -- Ej: usuario, ciclovia, tramo
+    realizado_por int not null,
+    entidad_afectada varchar(100), -- ej: usuario, ciclovia, tramo
     entidad_id int,
     realizado_en timestamp default current_timestamp, 
 
-    foreign key (admin_id)
-        references administrador(admin_id)
-        on delete cascade
+    foreign key (realizado_por)
+        references usuario(usuario_id)
+        on delete restrict
 );
---13. cofiguracion de sistema
+-- 12. configuracion de sistema
 create table configuracion_sistema(
     config_id serial primary key,
     clave varchar(100) not null unique,
@@ -204,23 +195,23 @@ create table configuracion_sistema(
     actualizado_en timestamp default current_timestamp,
 
         foreign key (actualizado_por)
-            references administrador(admin_id)
+            references usuario(usuario_id)
             on delete set null
 );
---14. reportes del administrador 
+-- 13. reportes del administrador 
 create table reportes_admin(
     reporte_id  serial primary key,
-    admin_id int not null,
+    creado_por int not null,
     titulo varchar(150) not null,
     contenido text,
     creado_en timestamp default current_timestamp,
 
-        foreign key (admin_id)
-            references administrador(admin_id)
-            on delete cascade
+        foreign key (creado_por)
+            references usuario(usuario_id)
+            on delete restrict
 );
 -- ============================================================
--- 15. PLANES DE SUSCRIPCIÓN
+-- 14. PLANES DE SUSCRIPCIÓN
 -- ============================================================
 
 CREATE TABLE plan_suscripcion (
@@ -249,7 +240,7 @@ CREATE TABLE plan_suscripcion (
 
 
 -- ============================================================
--- 16. SUSCRIPCIONES DE USUARIOS
+-- 15. SUSCRIPCIONES DE USUARIOS
 -- ============================================================
 
 CREATE TABLE suscripcion (
@@ -294,7 +285,7 @@ CREATE TABLE suscripcion (
 
 
 -- ============================================================
--- 17. MÉTODOS DE PAGO
+-- 16. MÉTODOS DE PAGO
 -- ============================================================
 
 CREATE TABLE metodo_pago (
@@ -343,7 +334,7 @@ CREATE TABLE metodo_pago (
 
 
 -- ============================================================
--- 18. PAGOS
+-- 17. PAGOS
 -- ============================================================
 
 CREATE TABLE pago (
@@ -392,7 +383,7 @@ CREATE TABLE pago (
 
 
 -- ============================================================
--- 19. BICICLETAS DE USUARIOS
+-- 18. BICICLETAS DE USUARIOS
 -- ============================================================
 
 CREATE TABLE bicicleta (
@@ -433,7 +424,7 @@ CREATE TABLE bicicleta (
 
 
 -- ============================================================
--- 20. RUTAS
+-- 19. RUTAS
 -- ============================================================
 
 CREATE TABLE ruta (
@@ -502,7 +493,7 @@ CREATE TABLE ruta (
 
 
 -- ============================================================
--- 21. RELACIÓN ENTRE RUTAS Y TRAMOS DE CICLOVÍA
+-- 20. RELACIÓN ENTRE RUTAS Y TRAMOS DE CICLOVÍA
 -- ============================================================
 
 CREATE TABLE ruta_tramo (
@@ -535,7 +526,7 @@ CREATE TABLE ruta_tramo (
 
 
 -- ============================================================
--- 22. RUTAS FAVORITAS
+-- 21. RUTAS FAVORITAS
 -- ============================================================
 
 CREATE TABLE ruta_favorita (
@@ -562,7 +553,7 @@ CREATE TABLE ruta_favorita (
 
 
 -- ============================================================
--- 23. RECORRIDOS REALIZADOS
+-- 22. RECORRIDOS REALIZADOS
 -- ============================================================
 
 CREATE TABLE recorrido (
@@ -646,7 +637,7 @@ CREATE TABLE recorrido (
 
 
 -- ============================================================
--- 24. PUNTOS GPS DE LOS RECORRIDOS
+-- 23. PUNTOS GPS DE LOS RECORRIDOS
 -- ============================================================
 
 CREATE TABLE recorrido_punto (
@@ -686,7 +677,7 @@ CREATE TABLE recorrido_punto (
 
 
 -- ============================================================
--- 25. INCIDENCIAS
+-- 24. INCIDENCIAS
 -- ============================================================
 
 CREATE TABLE incidencia (
@@ -777,7 +768,7 @@ CREATE TABLE incidencia (
 
 
 -- ============================================================
--- 26. CALIFICACIONES DE RUTAS
+-- 25. CALIFICACIONES DE RUTAS
 -- ============================================================
 
 CREATE TABLE calificacion_ruta (
@@ -815,7 +806,7 @@ CREATE TABLE calificacion_ruta (
 
 
 -- ============================================================
--- 27. PUNTOS DE INTERÉS
+-- 26. PUNTOS DE INTERÉS
 -- ============================================================
 
 CREATE TABLE punto_interes (
@@ -859,7 +850,7 @@ CREATE TABLE punto_interes (
 
 
 -- ============================================================
--- 28. RELACIÓN RUTA - PUNTO DE INTERÉS
+-- 27. RELACIÓN RUTA - PUNTO DE INTERÉS
 -- ============================================================
 
 CREATE TABLE ruta_punto_interes (
@@ -888,4 +879,167 @@ CREATE TABLE ruta_punto_interes (
             orden IS NULL
             OR orden > 0
         )
+);
+
+
+-- ============================================================
+-- 28. estaciones de bicicletas
+-- ============================================================
+
+create table estacion_bicicleta (
+    estacion_id serial primary key,
+    punto_interes_id int not null unique,
+
+    capacidad int not null,
+    bicicletas_disponibles int not null default 0,
+    espacios_disponibles int not null default 0,
+
+    horario_apertura time,
+    horario_cierre time,
+
+    estado varchar(20) not null default 'activa',
+    actualizada_en timestamp not null default current_timestamp,
+
+    foreign key (punto_interes_id)
+        references punto_interes(punto_interes_id)
+        on update cascade
+        on delete cascade,
+
+    check (capacidad > 0),
+
+    check (
+        bicicletas_disponibles >= 0
+        and bicicletas_disponibles <= capacidad
+    ),
+
+    check (
+        espacios_disponibles >= 0
+        and espacios_disponibles <= capacidad
+    ),
+
+    check (
+        bicicletas_disponibles + espacios_disponibles <= capacidad
+    ),
+
+    check (
+        estado in (
+            'activa',
+            'inactiva',
+            'mantenimiento'
+        )
+    )
+);
+
+
+-- ============================================================
+-- 29. historial de estados de las incidencias
+-- ============================================================
+
+create table historial_estado_incidencia (
+    historial_id serial primary key,
+    incidencia_id int not null,
+    cambiado_por int not null,
+
+    estado_anterior varchar(20),
+    estado_nuevo varchar(20) not null,
+    comentario text,
+
+    cambiado_en timestamp not null default current_timestamp,
+
+    foreign key (incidencia_id)
+        references incidencia(incidencia_id)
+        on update cascade
+        on delete cascade,
+
+    foreign key (cambiado_por)
+        references usuario(usuario_id)
+        on update cascade
+        on delete restrict,
+
+    check (
+        estado_anterior is null
+        or estado_anterior in (
+            'reportada',
+            'en_revision',
+            'resuelta',
+            'descartada'
+        )
+    ),
+
+    check (
+        estado_nuevo in (
+            'reportada',
+            'en_revision',
+            'resuelta',
+            'descartada'
+        )
+    ),
+
+    check (
+        estado_anterior is null
+        or estado_anterior <> estado_nuevo
+    )
+);
+
+
+-- ============================================================
+-- 30. notificaciones de los usuarios
+-- ============================================================
+
+create table notificacion (
+    notificacion_id serial primary key,
+    usuario_id int not null,
+
+    incidencia_id int,
+    ruta_id int,
+    pago_id int,
+    suscripcion_id int,
+
+    tipo varchar(30) not null,
+    titulo varchar(150) not null,
+    mensaje text not null,
+
+    leida boolean not null default false,
+    creada_en timestamp not null default current_timestamp,
+    leida_en timestamp,
+
+    foreign key (usuario_id)
+        references usuario(usuario_id)
+        on update cascade
+        on delete cascade,
+
+    foreign key (incidencia_id)
+        references incidencia(incidencia_id)
+        on update cascade
+        on delete set null,
+
+    foreign key (ruta_id)
+        references ruta(ruta_id)
+        on update cascade
+        on delete set null,
+
+    foreign key (pago_id)
+        references pago(pago_id)
+        on update cascade
+        on delete set null,
+
+    foreign key (suscripcion_id)
+        references suscripcion(suscripcion_id)
+        on update cascade
+        on delete set null,
+
+    check (
+        tipo in (
+            'incidencia',
+            'ruta',
+            'pago',
+            'suscripcion',
+            'sistema'
+        )
+    ),
+
+    check (
+        leida_en is null
+        or leida_en >= creada_en
+    )
 );
