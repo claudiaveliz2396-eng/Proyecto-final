@@ -220,7 +220,7 @@ create table reportes_admin(
             on delete cascade
 );
 -- ============================================================
--- 11. PLANES DE SUSCRIPCIÓN
+-- 15. PLANES DE SUSCRIPCIÓN
 -- ============================================================
 
 CREATE TABLE plan_suscripcion (
@@ -249,7 +249,7 @@ CREATE TABLE plan_suscripcion (
 
 
 -- ============================================================
--- 12. SUSCRIPCIONES DE USUARIOS
+-- 16. SUSCRIPCIONES DE USUARIOS
 -- ============================================================
 
 CREATE TABLE suscripcion (
@@ -294,7 +294,7 @@ CREATE TABLE suscripcion (
 
 
 -- ============================================================
--- 13. MÉTODOS DE PAGO
+-- 17. MÉTODOS DE PAGO
 -- ============================================================
 
 CREATE TABLE metodo_pago (
@@ -343,7 +343,7 @@ CREATE TABLE metodo_pago (
 
 
 -- ============================================================
--- 14. PAGOS
+-- 18. PAGOS
 -- ============================================================
 
 CREATE TABLE pago (
@@ -392,7 +392,7 @@ CREATE TABLE pago (
 
 
 -- ============================================================
--- 15. BICICLETAS DE USUARIOS
+-- 19. BICICLETAS DE USUARIOS
 -- ============================================================
 
 CREATE TABLE bicicleta (
@@ -433,7 +433,7 @@ CREATE TABLE bicicleta (
 
 
 -- ============================================================
--- 16. RUTAS
+-- 20. RUTAS
 -- ============================================================
 
 CREATE TABLE ruta (
@@ -502,7 +502,7 @@ CREATE TABLE ruta (
 
 
 -- ============================================================
--- 17. RELACIÓN ENTRE RUTAS Y TRAMOS DE CICLOVÍA
+-- 21. RELACIÓN ENTRE RUTAS Y TRAMOS DE CICLOVÍA
 -- ============================================================
 
 CREATE TABLE ruta_tramo (
@@ -535,7 +535,7 @@ CREATE TABLE ruta_tramo (
 
 
 -- ============================================================
--- 18. RUTAS FAVORITAS
+-- 22. RUTAS FAVORITAS
 -- ============================================================
 
 CREATE TABLE ruta_favorita (
@@ -562,7 +562,7 @@ CREATE TABLE ruta_favorita (
 
 
 -- ============================================================
--- 19. RECORRIDOS REALIZADOS
+-- 23. RECORRIDOS REALIZADOS
 -- ============================================================
 
 CREATE TABLE recorrido (
@@ -646,7 +646,7 @@ CREATE TABLE recorrido (
 
 
 -- ============================================================
--- 20. PUNTOS GPS DE LOS RECORRIDOS
+-- 24. PUNTOS GPS DE LOS RECORRIDOS
 -- ============================================================
 
 CREATE TABLE recorrido_punto (
@@ -686,7 +686,7 @@ CREATE TABLE recorrido_punto (
 
 
 -- ============================================================
--- 21. INCIDENCIAS
+-- 25. INCIDENCIAS
 -- ============================================================
 
 CREATE TABLE incidencia (
@@ -777,7 +777,7 @@ CREATE TABLE incidencia (
 
 
 -- ============================================================
--- 22. CALIFICACIONES DE RUTAS
+-- 26. CALIFICACIONES DE RUTAS
 -- ============================================================
 
 CREATE TABLE calificacion_ruta (
@@ -815,7 +815,7 @@ CREATE TABLE calificacion_ruta (
 
 
 -- ============================================================
--- 23. PUNTOS DE INTERÉS
+-- 27. PUNTOS DE INTERÉS
 -- ============================================================
 
 CREATE TABLE punto_interes (
@@ -859,7 +859,7 @@ CREATE TABLE punto_interes (
 
 
 -- ============================================================
--- 24. RELACIÓN RUTA - PUNTO DE INTERÉS
+-- 28. RELACIÓN RUTA - PUNTO DE INTERÉS
 -- ============================================================
 
 CREATE TABLE ruta_punto_interes (
