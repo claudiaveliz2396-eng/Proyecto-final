@@ -1,5 +1,5 @@
 -- =====================================================
--- tablas de usuarios - bykeride
+-- tablas de usuarios - ciclistapp
 -- =====================================================
 
 
@@ -85,7 +85,7 @@ create table configuracion_seguridad (
 );
 
 -- =====================================================
--- tablas geográficas - bykeride
+-- tablas geográficas - ciclistapp
 -- =====================================================
 
 
@@ -167,3 +167,56 @@ create table tramo_colonia (
         references colonia(colonia_id)
         on delete cascade
 );
+
+-- =====================================================
+-- tablas administrativas - ciclistapp
+-- =====================================================
+
+--11. Administradores
+create table administrador (
+    admin_id primary key,
+    usuario_id int not null unique,
+    nivel varchar(50) not null, -- Ej: superadmin, moderador
+    creado_en timestamp default current_timestamp,
+
+    foreign key (usuario_id)
+        references usuario(usuario_id)
+        on delete cascade
+);
+--12. acciones del administrador 
+create table acciones_administrador(
+    accion_id serial primary key,
+    admin_id int not null,
+    entidad_afectada varchar(100) -- Ej: usuario, ciclovia, tramo
+    entidad_id int,
+    realizado_en timestamp default current_timestamp, 
+
+    foreign key (admin_id)
+        references administrador(admin_id)
+        on delete cascade
+);
+--13. cofiguracion de sistema
+create table configuracion_sistema(
+    config_id serial primary key,
+    clave varchar(100) not null unique,
+    valor text not null,
+    actualizado_por int,
+    actualizado_en timestamp default current_timestamp,
+
+        foreign key (actualizado_por)
+            references administrador(admin_id)
+            on delete set null
+);
+--14. reportes del administrador 
+create table reportes_admin(
+    reporte_id  serial primary key,
+    admin_id int not null,
+    titulo varchar(150) not null,
+    contenido text,
+    creado_en timestamp default current_timestamp,
+
+        foreign key (admin_id)
+            references administrador(admin_id)
+            on delete cascade
+);
+
