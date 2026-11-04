@@ -1,3 +1,4 @@
+------faker para poblar MongoDB------
 from pymongo import MongoClient
 from faker import Faker
 
