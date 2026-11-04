@@ -1,3 +1,4 @@
+----Esquema de MongoBD--------
 {
   "sesion_usuario": {
     "_id": "ObjectId",
