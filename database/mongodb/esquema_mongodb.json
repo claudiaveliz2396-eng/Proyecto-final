@@ -1,0 +1,30 @@
+{
+  "sesion_usuario": {
+    "_id": "ObjectId",
+    "usuario_id": "Integer (FK hacia PostgreSQL)",
+    "refresh_token_hash": "String (Bcrypt)",
+    "direccion_ip": "String",
+    "dispositivo": "String",
+    "creado_en": "ISODate",
+    "expira_en": "ISODate"
+  },
+  "auditoria_admin": {
+    "_id": "ObjectId",
+    "realizado_por": "Integer (FK hacia PostgreSQL)",
+    "accion": "String",
+    "entidad_afectada": "String",
+    "fecha": "ISODate"
+  },
+  "recorrido_punto_gps": {
+    "_id": "ObjectId",
+    "recorrido_id": "Integer (FK hacia PostgreSQL)",
+    "puntos": [
+      {
+        "latitud": "Decimal",
+        "longitud": "Decimal",
+        "velocidad_kmh": "Decimal",
+        "timestamp": "ISODate"
+      }
+    ]
+  }
+}
