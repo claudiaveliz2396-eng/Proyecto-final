@@ -374,3 +374,46 @@ db.createCollection("administracion", {
   // Ejemplo documento de configuración: { _id: "config_sistema", limites_velocidad: 50, ... }
   // Ejemplo documento de log de acciones: { tipo: "log_accion", realizado_por: ObjectId, entidad: "usuario", accion: "baneo", fecha: Date }
 });
+// mongo-init.js
+// Selecciona o crea la base de datos
+db = db.getSiblingDB('ciclistapp_db');
+
+print("Iniciando la configuración de colecciones en MongoDB...");
+
+// =====================================================
+// 1. Colección: sesion_usuario (Gestión de tokens)
+// =====================================================
+db.createCollection("sesion_usuario");
+
+// Índice TTL: MongoDB borrará automáticamente el documento cuando se alcance la fecha 'expira_en'
+db.sesion_usuario.createIndex({ "expira_en": 1 }, { expireAfterSeconds: 0 });
+// Índice para buscar rápidamente todas las sesiones activas de un usuario (FK lógica)
+db.sesion_usuario.createIndex({ "usuario_id": 1 });
+// Índice único para evitar tokens duplicados
+db.sesion_usuario.createIndex({ "refresh_token_hash": 1 }, { unique: true });
+
+
+// =====================================================
+// 2. Colección: auditoria_admin (Logs del sistema)
+// =====================================================
+db.createCollection("auditoria_admin");
+
+// Índice para rastrear qué hizo un administrador específico (FK lógica)
+db.auditoria_admin.createIndex({ "realizado_por": 1 });
+// Índice descendente por fecha para cargar rápido el historial más reciente
+db.auditoria_admin.createIndex({ "fecha": -1 });
+
+
+// =====================================================
+// 3. Colección: recorrido_punto_gps (Telemetría / Big Data)
+// =====================================================
+db.createCollection("recorrido_punto_gps");
+
+// Índice para recuperar rápidamente toda la ruta de un recorrido específico (FK lógica)
+db.recorrido_punto_gps.createIndex({ "recorrido_id": 1 });
+// Índice temporal para trazar la ruta en orden
+db.recorrido_punto_gps.createIndex({ "timestamp": 1 });
+// Índice Geoespacial (2dsphere) para habilitar consultas de mapas (ej. "¿Qué usuarios pasaron por esta coordenada?")
+db.recorrido_punto_gps.createIndex({ "ubicacion": "2dsphere" });
+
+print("✅ Inicialización de MongoDB completada. Colecciones e índices creados con éxito.");
