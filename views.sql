@@ -1,8 +1,6 @@
 -- ============================================================
 -- VISTAS ANALITICAS DE CICLISTAPP
--- Ejecutar despues de DDLciclistapp.sql y seeds.sql
 -- ============================================================
-
 
 -- 1. Suscripciones e ingresos generados por cada plan.
 create or replace view vw_ingresos_por_plan as
