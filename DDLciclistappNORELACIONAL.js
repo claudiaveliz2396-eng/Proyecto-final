@@ -100,11 +100,22 @@ db.createCollection("ciclovias", {
             properties: {
               tramo_id: { bsonType: "objectId" },
               nombre: { bsonType: "string" },
-              ubicacion_inicio: { // GeoJSON
-                type: { enum: ["Point"] },
-                coordinates: { bsonType: "array" } // [longitud, latitud]
+              ubicacion_inicio: {
+                bsonType: "object",
+                required: ["type", "coordinates"],
+                properties: {
+                  type: { enum: ["Point"] },
+                  coordinates: { bsonType: "array" } // [longitud, latitud]
+                }
               },
-              ubicacion_fin: { type: { enum: ["Point"] }, coordinates: { bsonType: "array" } },
+              ubicacion_fin: {
+                bsonType: "object",
+                required: ["type", "coordinates"],
+                properties: {
+                  type: { enum: ["Point"] },
+                  coordinates: { bsonType: "array" }
+                }
+              },
               longitud_m: { bsonType: "double" },
               sentido: { bsonType: "string" },
               activo: { bsonType: "bool" },
@@ -142,8 +153,22 @@ db.createCollection("rutas", {
         creada_por: { bsonType: "objectId" }, // Referencia a usuarios
         nombre: { bsonType: "string" },
         descripcion: { bsonType: "string" },
-        ubicacion_inicio: { type: { enum: ["Point"] }, coordinates: { bsonType: "array" } },
-        ubicacion_fin: { type: { enum: ["Point"] }, coordinates: { bsonType: "array" } },
+        ubicacion_inicio: {
+          bsonType: "object",
+          required: ["type", "coordinates"],
+          properties: {
+            type: { enum: ["Point"] },
+            coordinates: { bsonType: "array" }
+          }
+        },
+        ubicacion_fin: {
+          bsonType: "object",
+          required: ["type", "coordinates"],
+          properties: {
+            type: { enum: ["Point"] },
+            coordinates: { bsonType: "array" }
+          }
+        },
         distancia_m: { bsonType: "double" },
         duracion_estimada_min: { bsonType: "int" },
         dificultad: { enum: ["facil", "media", "dificil"] },
@@ -214,7 +239,14 @@ db.createCollection("recorridos", {
           items: {
             bsonType: "object",
             properties: {
-              coordenadas: { type: { enum: ["Point"] }, coordinates: { bsonType: "array" } },
+              coordenadas: {
+                bsonType: "object",
+                required: ["type", "coordinates"],
+                properties: {
+                  type: { enum: ["Point"] },
+                  coordinates: { bsonType: "array" }
+                }
+              },
               altitud_m: { bsonType: "double" },
               velocidad_kmh: { bsonType: "double" },
               registrado_en: { bsonType: "date" }
@@ -240,7 +272,14 @@ db.createCollection("incidencias", {
         tramo_id: { bsonType: "objectId" },
         tipo: { enum: ["bache", "accidente", "obra", "bloqueo", "inseguridad", "inundacion", "semaforo", "otro"] },
         descripcion: { bsonType: "string" },
-        ubicacion: { type: { enum: ["Point"] }, coordinates: { bsonType: "array" } },
+        ubicacion: {
+          bsonType: "object",
+          required: ["type", "coordinates"],
+          properties: {
+            type: { enum: ["Point"] },
+            coordinates: { bsonType: "array" }
+          }
+        },
         nivel: { enum: ["baja", "media", "alta", "critica"] },
         estado: { enum: ["reportada", "en_revision", "resuelta", "descartada"] },
         reportada_en: { bsonType: "date" },
@@ -321,7 +360,14 @@ db.createCollection("puntos_interes", {
         nombre: { bsonType: "string" },
         tipo: { enum: ["taller", "estacion_bicicletas", "estacionamiento", "tienda", "agua", "hospital", "parque", "otro"] },
         descripcion: { bsonType: "string" },
-        ubicacion: { type: { enum: ["Point"] }, coordinates: { bsonType: "array" } },
+        ubicacion: {
+          bsonType: "object",
+          required: ["type", "coordinates"],
+          properties: {
+            type: { enum: ["Point"] },
+            coordinates: { bsonType: "array" }
+          }
+        },
         direccion: { bsonType: "string" },
         activo: { bsonType: "bool" },
         // Embebido condicional si el tipo es 'estacion_bicicletas'
@@ -374,16 +420,6 @@ db.createCollection("administracion", {
   // Ejemplo documento de configuración: { _id: "config_sistema", limites_velocidad: 50, ... }
   // Ejemplo documento de log de acciones: { tipo: "log_accion", realizado_por: ObjectId, entidad: "usuario", accion: "baneo", fecha: Date }
 });
-// =====================================================
-// COLECCIÓN 9: administracion
-// Agrupa: acciones_administrador, configuracion_sistema, reportes_admin
-// =====================================================
-db.createCollection("administracion", {
-  // Aquí puedes almacenar configuraciones globales tipo Key-Value y reportes.
-  // Ejemplo documento de configuración: { _id: "config_sistema", limites_velocidad: 50, ... }
-  // Ejemplo documento de log de acciones: { tipo: "log_accion", realizado_por: ObjectId, entidad: "usuario", accion: "baneo", fecha: Date }
-}); // <--- DESPUÉS DE AQUÍ PEGAS EL CÓDIGO NUEVO
-
 
 // =====================================================
 // ÍNDICES PARA OPTIMIZAR EL RENDIMIENTO Y BÚSQUEDAS
